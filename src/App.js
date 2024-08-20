@@ -1,22 +1,22 @@
-import logo from './logo.svg';
+import {useState} from 'react';
 import './App.css';
+import SearchBar from './Components/SearchBar/SearchBar';
+import SearchResults from './Components/SearchResults/SearchResults';
+import searchMusic from './utils/spotify-api';
 
 function App() {
+  const [songs, setSongs] = useState([]);
+
+  const onClickSearch = songDetail => {
+    let result = searchMusic(songDetail);
+    setSongs(result);
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <SearchBar onClickSearch={onClickSearch} />
+        <SearchResults songs={songs} />
       </header>
     </div>
   );
