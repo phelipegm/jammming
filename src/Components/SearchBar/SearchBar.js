@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import './SearchBar.css';
 
 function SearchBar(props) {
     const [songDetail, setSongDetail] = useState('');
@@ -8,7 +9,7 @@ function SearchBar(props) {
     };
 
     return (
-        <div>
+        <div className='main-container'>
             <div>
                 <input type='text' placeholder='Search' value={songDetail} onChange={handleSearchChange} />
             </div>
