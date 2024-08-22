@@ -16,9 +16,11 @@ function App() {
   }
 
   const onClickAddSongToPlaylist = song => {
-    setPlaylistSongs((prev) => {
-      return [song, ...prev]
-    });
+    if (!playlistSongs.includes(song)) {
+      setPlaylistSongs((prev) => {
+        return [song, ...prev]
+      });
+    }
   }
 
   return (
