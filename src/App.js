@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import './App.css';
 import Banner from './Components/Banner/Banner';
 import SearchBar from './Components/SearchBar/SearchBar';
@@ -16,19 +16,23 @@ function App() {
   }
 
   const onClickAddSongToPlaylist = song => {
-    setPlaylistSongs((prev) => { 
+    setPlaylistSongs((prev) => {
       return [song, ...prev]
     });
   }
 
   return (
     <div className="App">
-        <Banner />
-        <SearchBar onClickSearch={onClickSearch} />
-        <div className='results-container'>
-          <SearchResults songs={songs} onClickAddSongToPlaylist={onClickAddSongToPlaylist}/>
+      <Banner />
+      <SearchBar onClickSearch={onClickSearch} />
+      <div className='results-container'>
+        <div className='opaque-container'>
+          <SearchResults songs={songs} onClickAddSongToPlaylist={onClickAddSongToPlaylist} />
+        </div>
+        <div className='opaque-container'>
           <Playlist playlistSongs={playlistSongs} />
         </div>
+      </div>
     </div>
   );
 }

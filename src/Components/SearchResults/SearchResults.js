@@ -12,7 +12,6 @@ function SearchResults(props) {
                         <Track song={song} />
                         <input className="add-button" type="button" value="+" onClick={() => props.onClickAddSongToPlaylist(song)} />
                     </ul>
-                    <hr></hr>
                 </>
             )}
         </div>

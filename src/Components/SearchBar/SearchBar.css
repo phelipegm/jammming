@@ -1,3 +1,25 @@
 .main-container {
     text-align: center;
 }
+
+.search-input {
+    margin-top: 20px;
+    border: none;
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+}
+
+.search-button {
+    background-color: rgb(90, 27, 209);
+    border: none;
+    color: white;
+    padding: 20px;
+    margin: 4px 2px;
+    border-radius: 50px;
+    font-weight: bold;
+    width: 150px;
+    font-size: 18px;
+    margin-top: 20px;
+}

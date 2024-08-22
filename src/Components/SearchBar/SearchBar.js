@@ -11,10 +11,10 @@ function SearchBar(props) {
     return (
         <div className='main-container'>
             <div>
-                <input type='text' placeholder='Search' value={songDetail} onChange={handleSearchChange} />
+                <input className='search-input' type='text' placeholder='Search' value={songDetail} onChange={handleSearchChange} />
             </div>
             <div>
-                <input type='button' value='Search' onClick={() => props.onClickSearch(songDetail.toLowerCase())} />
+                <input className='search-button' type='button' value='Search' onClick={() => props.onClickSearch(songDetail.toLowerCase())} />
             </div>
         </div>
     );
