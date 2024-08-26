@@ -4,6 +4,27 @@
     margin-top: -10px;
 }
 
+.result-container {
+    max-height: calc(100vh - 410px);
+    overflow-y: auto;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(221, 221, 221, 0.7) rgba(255, 255, 255, 0.1); /* Firefox */
+}
+
+.result-container::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.result-container::-webkit-scrollbar-thumb {
+    background-color: rgba(221, 221, 221, 0.7);
+    border-radius: 10px;
+}
+
+.result-container::-webkit-scrollbar-track {
+    background-color: rgba(221, 221, 221, 0.7);
+}
+
 .search-content {
     position: relative;
 }

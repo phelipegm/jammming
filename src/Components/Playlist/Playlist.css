@@ -7,6 +7,11 @@
     font-size: 20px;
 }
 
+.playlist-container {
+    max-height: calc(100vh - 460px);
+    overflow-y: auto;
+}
+
 .save-button {
     background-color: rgb(90, 27, 209);
     border: none;
@@ -19,5 +24,22 @@
 
 .button-container {
     text-align: center;
+}
+
+.playlist-content {
+    position: relative;
+}
+
+.remove-button {
+    height: 25px;
+    width: 25px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+    right: 0;
+    margin-top: -50px;
+    position: absolute;
 }
 

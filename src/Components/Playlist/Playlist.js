@@ -1,28 +1,26 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './Playlist.css';
 import Track from '../Track/Track';
 
 function Playlist(props) {
-    const [playlistName, setPlaylistName] = useState();
-
-    const handlePlaylistNameClick = event => {
-        setPlaylistName(event.target.value);
-    };
-
+    
     return (
         <div>
             <h1 className='main-title'>Playlist</h1>
-            <input className='playlist-name' type='text' placeholder='Name' value={playlistName} onClick={() => handlePlaylistNameClick} />
+            <input className='playlist-name' type='text' placeholder='Name' value={props.playlistName} onChange={props.onChangePlaylistName} />
             <hr></hr>
-            {props.playlistSongs.map((song, index) =>
-                <>
-                    <ul key={index}>
-                        <Track song={song} />
-                    </ul>
-                </>
-            )}
+            <div className='playlist-container'>
+                {props.playlistSongs.map((song, index) =>
+                    <>
+                        <ul className='playlist-content' key={index}>
+                            <Track song={song} />
+                            <input className="remove-button" type="button" value="-" onClick={() => props.onClickRemoveSongToPlaylist(song)} />
+                        </ul>
+                    </>
+                )}
+            </div>
             <div className='button-container'>
-                <input className='save-button' type='button' value='SAVE TO SPOTIFY' />
+                <input className='save-button' type='button' value='SAVE TO SPOTIFY' onClick={() => props.onClickSavePlaylist(props.playlistName)} />
             </div>
         </div>
     );
