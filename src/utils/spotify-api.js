@@ -12,9 +12,9 @@ export const getUserAuthorization = async () => {
     const codeVerifier = generateRandomString(64);
     const hashed = await sha256(codeVerifier)
     const codeChallenge = base64encode(hashed);
-    
+
     window.localStorage.setItem('code_verifier', codeVerifier);
-    
+
     const params = {
         response_type: 'code',
         client_id: clientId,
@@ -34,31 +34,52 @@ export const getUserAuthorization = async () => {
 };
 
 export const getToken = async code => {
-    // stored in the previous step
-    let codeVerifier = localStorage.getItem('code_verifier');
+    try {
+        let codeVerifier = localStorage.getItem('code_verifier');
 
+        const payload = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                client_id: clientId,
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri: redirectUri,
+                code_verifier: codeVerifier,
+            }),
+        }
+
+        const response = await fetch(url, payload);
+        const result = await response.json();
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+
+export const refreshAccessToken = async refreshToken => {
     const payload = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
-            client_id: clientId,
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: redirectUri,
-            code_verifier: codeVerifier,
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken,
+          client_id: clientId
         }),
-    }
-
-    const body = await fetch(url, payload);
-    const response = await body.json();
-    return response.access_token;
-}
+      }
+      const response = await fetch(url, payload);
+      const result = await response.json();
+      return result;
+};
 
 export const searchMusic = async (songDetail, accessToken) => {
     try {
-        const query=encodeURIComponent(songDetail);
+        const query = encodeURIComponent(songDetail);
         const endpoint = `${searchUrl}q=${query}&type=track`;
 
         const response = await fetch(endpoint, {
@@ -68,20 +89,20 @@ export const searchMusic = async (songDetail, accessToken) => {
                 'Content-Type': 'application/json'
             }
         });
-        if(response.ok){
+        if (response.ok) {
             const data = await response.json();
-            console.log(data);
             return data.tracks.items.map(track => new TrackModel(
                 track.name,
                 track.artists.map(artist => artist.name).join(', '),
                 track.album.name,
-                track.uri
+                track.uri,
+                track.album.images[2].url
             ))
-        }else {
+        } else {
             throw new Error('Request failed!');
         }
     }
-    catch(error) {
+    catch (error) {
         console.log(error);
     }
 }

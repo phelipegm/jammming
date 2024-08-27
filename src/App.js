@@ -3,7 +3,7 @@ import './App.css';
 import Banner from './Components/Banner/Banner';
 import SearchBar from './Components/SearchBar/SearchBar';
 import SearchResults from './Components/SearchResults/SearchResults';
-import { getUserAuthorization, getToken, searchMusic } from './utils/spotify-api';
+import { getUserAuthorization, getToken, refreshAccessToken, searchMusic } from './utils/spotify-api';
 import Playlist from './Components/Playlist/Playlist';
 
 function App() {
@@ -11,27 +11,46 @@ function App() {
   const [playlistSongs, setPlaylistSongs] = useState([]);
   const [playlistName, setPlaylistName] = useState("");
   const [musicUri, setMusicUri] = useState([]);
-  const [accessToken, getAccessToken] = useState('');
-  
+  const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState('');
+  const [tokenExpiry, setTokenExpiry] = useState(null);
+
   useEffect(() => {
-    // Check if there's a code in the URL params
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-
+    
     if (code) {
       getToken(code).then(token => {
-        getAccessToken(token);
+        setAccessToken(token.access_token);
+        setRefreshToken(token.refresh_token);
+        setTokenExpiry(Date.now() + token.expires_in * 1000);
+        urlParams.delete('code');
+        window.history.replaceState({}, '', `${window.location.pathname}`);
       });
-      
+
     } else {
-      // Redirect to Spotify if no code present
       getUserAuthorization();
     }
   }, []);
 
+  useEffect(() => {
+    const refreshTokenIfNeeded = () => {
+      if (tokenExpiry && Date.now() >= tokenExpiry - 5 * 60 * 1000) {
+        const newToken = refreshAccessToken(refreshToken).then(result => {
+          setAccessToken(newToken.access_token);
+          setRefreshToken(newToken.refresh_token);
+          setTokenExpiry(Date.now() + newToken.expires_in * 1000);
+        });
+      }
+    };
+
+    const intervalId = setInterval(refreshTokenIfNeeded, 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, [accessToken]);
+
   const onClickSearch = songDetail => {
     searchMusic(songDetail, accessToken).then(result => {
-      console.log(result);
       setSongs(result);
     });
   };
