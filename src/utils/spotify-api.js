@@ -1,12 +1,14 @@
 import { TrackModel } from "../models/TrackModel";
 
 const clientId = 'f25b046980ee4cb6835c93dde4601cbb';
-const scope = 'user-read-private user-read-email';
+const scope = 'user-read-private user-read-email playlist-modify-private';
 
 const authUrl = new URL("https://accounts.spotify.com/authorize")
 const redirectUri = 'http://localhost:3000/callback';
 const url = 'https://accounts.spotify.com/api/token'
 const searchUrl = 'https://api.spotify.com/v1/search?'
+const userInfoUrl = 'https://api.spotify.com/v1/me';
+const createPlaylistUrl = 'https://api.spotify.com/v1/users/'
 
 export const getUserAuthorization = async () => {
     const codeVerifier = generateRandomString(64);
@@ -60,21 +62,66 @@ export const getToken = async code => {
     }
 };
 
+export const createPlaylist = async (accessToken, userId, playlistName) => {
+    try {
+        const payload = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: `${playlistName}`, description: '', public: false })
+        }
+
+        const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, payload);
+        const result = await response.json();
+        return result.id;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+export const addItemsToPlaylist = async (accessToken, playlistId, uris) => {
+    try {
+        const payload = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(uris)
+        }
+
+        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, payload);
+        const result = await response.json();
+        return result.snapshot_id;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
 export const refreshAccessToken = async refreshToken => {
-    const payload = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken,
-          client_id: clientId
-        }),
-      }
-      const response = await fetch(url, payload);
-      const result = await response.json();
-      return result;
+    try {
+        const payload = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                grant_type: 'refresh_token',
+                refresh_token: refreshToken,
+                client_id: clientId
+            }),
+        }
+        const response = await fetch(url, payload);
+        const result = await response.json();
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+    }
 };
 
 export const searchMusic = async (songDetail, accessToken) => {
@@ -99,6 +146,30 @@ export const searchMusic = async (songDetail, accessToken) => {
                 track.album.images[2].url
             ))
         } else {
+            throw new Error('Request failed!');
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+export const getUserInfo = async (accessToken) => {
+    try {
+        const payload = {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const response = await fetch(userInfoUrl, payload);
+        if (response.ok) {
+            const data = await response.json();
+            return data.id;
+        }
+        else {
             throw new Error('Request failed!');
         }
     }

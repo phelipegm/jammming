@@ -3,14 +3,14 @@ import './App.css';
 import Banner from './Components/Banner/Banner';
 import SearchBar from './Components/SearchBar/SearchBar';
 import SearchResults from './Components/SearchResults/SearchResults';
-import { getUserAuthorization, getToken, refreshAccessToken, searchMusic } from './utils/spotify-api';
+import { getUserAuthorization, getToken, refreshAccessToken, getUserInfo, searchMusic, createPlaylist, addItemsToPlaylist } from './utils/spotify-api';
 import Playlist from './Components/Playlist/Playlist';
 
 function App() {
   const [songs, setSongs] = useState([]);
   const [playlistSongs, setPlaylistSongs] = useState([]);
   const [playlistName, setPlaylistName] = useState("");
-  const [musicUri, setMusicUri] = useState([]);
+  const [musicUris, setMusicUris] = useState([]);
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
   const [tokenExpiry, setTokenExpiry] = useState(null);
@@ -61,7 +61,7 @@ function App() {
         return [song, ...prev]
       });
 
-      setMusicUri((prev) => {
+      setMusicUris((prev) => {
         return [song.uri, ...prev]
       });
     }
@@ -71,12 +71,22 @@ function App() {
     setPlaylistSongs((prev) => {
       return prev.filter(item => item !== song);
     });
+
+    setMusicUris((prev) => {
+      return [song.uri, ...prev]
+    });
   };
 
   const onClickSavePlaylist = playlistName => {
     if (playlistName !== "" && playlistSongs.length > 0) {
       setPlaylistSongs([]);
       setPlaylistName("");
+      
+      getUserInfo(accessToken).then(userId => {
+        createPlaylist(accessToken, userId, playlistName).then(playlistId => {
+          addItemsToPlaylist(accessToken, playlistId, musicUris);
+        });
+      })
     }
   };
 
